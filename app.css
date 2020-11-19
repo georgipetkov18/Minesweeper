@@ -1,0 +1,10 @@
+article {
+    width: 55%;
+    float: left;
+}
+
+aside {
+    width: 45%;
+    float: right;
+    font-size: large;
+}
