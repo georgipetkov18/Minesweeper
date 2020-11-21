@@ -68,18 +68,16 @@ function startGame(gameLevel) {
         Engine.placeNumbers(level, mines);
         timer.setTimer();
 
-        console.log(mines)
-
         canvas.addEventListener('click', function clickHandler(e) {
             let rect = canvas.getBoundingClientRect();
             let mouseX = e.clientX - rect.left;
             let mouseY = e.clientY - rect.top;
 
-            let currentCell = Engine.getCurrentCell(mouseX, mouseY)
+            let currentCell = Engine.getCurrentCell(level, mouseX, mouseY)
             if (currentCell.Status !== 'marked') {
                 currentCell.isClicked = true;
                 if (mines.includes(currentCell.ID)) {
-                    Engine.endGame(ctx, mines);
+                    Engine.endGame(level, ctx, mines);
                     canvas.removeEventListener('click', clickHandler);
                     canvas.removeEventListener('contextmenu', rightClickHandler);
                     timer.stopTimer();
@@ -99,8 +97,6 @@ function startGame(gameLevel) {
                     }
                 }
             }
-
-            //console.log(currentCell.ID)
         });
 
         canvas.addEventListener('contextmenu', rightClickHandler);
@@ -113,7 +109,7 @@ function startGame(gameLevel) {
         let mouseX = e.clientX - rect.left;
         let mouseY = e.clientY - rect.top;
 
-        let currentCell = Engine.getCurrentCell(mouseX, mouseY)
+        let currentCell = Engine.getCurrentCell(level, mouseX, mouseY)
 
         if (currentCell.isClicked === false) {
             if (currentCell.Status === 'unmarked' && flags < level.minesCount) {
@@ -127,7 +123,6 @@ function startGame(gameLevel) {
                 }
 
                 if (correctFlagsCount === level.minesCount) {
-                    //alert("You won");
                     timer.stopTimer();
                     button.style.display = 'initial';
                     button.textContent = 'Play again';
@@ -147,23 +142,11 @@ function startGame(gameLevel) {
             }
         }
     }
-
-
-    /* window.onpopstate = (event) => {
-        let state = event.state;
-        if (state){
-            debugger
-            
-            window.location.href = state.url;
-            location.reload();
-        }
-    } */
 }
 
 window.onpopstate = () => { 
     let url = window.location.href;
     history.replaceState({}, "", url);
-    debugger;
     location.reload();
     console.log("hi")
 }

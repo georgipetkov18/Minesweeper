@@ -2,50 +2,50 @@ import * as Constants from './constants.js';
 import Cell from './classes/cell.js';
 import { getRandomInteger } from './auxFunctions.js';
 
-const cells = []
 const matrix = []
 
 function drawGameBoard(level, x1, x2, y1, y2, ctx) {
-    let index = 0;
-    for (let i = 0; i < level.height; i++) {
-        matrix[i] = []
-        for (let j = 0; j < level.width; j++) {
-            let currentCell = new Cell(index, x1, x2, y1, y2);
-            cells[index] = currentCell;   //TODO: USE ONLY ONE
-            matrix[i][j] = currentCell;
+    fillBoard(ctx, 0, 0, level.width * Constants.cellSize, level.height * Constants.cellSize, '#34baeb');
+    drawLines(level, ctx)
+    let id = 0;
 
-            ctx.moveTo(currentCell.X1, currentCell.Y1 + Constants.cellSize);
-            ctx.lineTo(currentCell.X2, currentCell.Y2);
-            ctx.moveTo(currentCell.X1 + Constants.cellSize, currentCell.Y1);
-            ctx.lineTo(currentCell.X2, currentCell.Y2);
-            fillCell(ctx, currentCell, '#34baeb')
+    for (let i = 0; i < level.height; i++) {
+        matrix[i] = [];
+
+        for (let j = 0; j < level.width; j++) {
+
+            let currentCell = new Cell(id, x1, x2, y1, y2);
+            matrix[i][j] = currentCell;    
             x1 += Constants.cellSize;
             x2 += Constants.cellSize;
-            index++;
-        }
+            id++;
+        }  
+
         x1 = 0;
         x2 = Constants.cellSize
         y1 += Constants.cellSize;
         y2 += Constants.cellSize;
     }
-    console.log(matrix)
 }
 
-function getCurrentCell(mouseX, mouseY) {
-    /* for (let i = 0; i < Constants.forLoopEnding; i++) {
-        let currentCell = matrix[i][0];
-        if (currentCell.Y2 > mouseY) {
-            for (let j = 0; j < Constants.forLoopEnding; j++) {
-                currentCell = matrix[i][j]
-                if (currentCell.X2  > mouseX) {
-                    return currentCell;
-                }
-            }
-        }     
-    } */
+function drawLines(level, ctx) {
+    for (let i = 0; i <= level.height; i++) {
+        ctx.moveTo(0, i * Constants.cellSize);
+        ctx.lineTo(level.width * Constants.cellSize, i * Constants.cellSize);
+        ctx.stroke();
+    }
 
-    for (let i = 0; i < cells.length; i++) {
-        let currentCell = cells[i];
+    for (let i = 0; i <= level.width; i++) {
+        ctx.moveTo(i * Constants.cellSize, 0);
+        ctx.lineTo(i * Constants.cellSize, level.height * Constants.cellSize);
+        ctx.stroke();
+        
+    }
+}
+
+function getCurrentCell(level, mouseX, mouseY) {
+    for (let i = 0; i < level.width * level.height; i++) {
+        let currentCell = getCellByID(level, i);
         if (currentCell.Y2 > mouseY && currentCell.X2 > mouseX) {
             return currentCell;
         }
@@ -59,10 +59,14 @@ function fillCell(ctx, cell, color) {
     ctx.stroke();
 }
 
+function fillBoard(ctx, x1, x2, width, height, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x1, x2, width, height)
+    ctx.stroke();
+}
+
 function displayCellImage(ctx, cell, imgID) {
     let img = document.getElementById(imgID);
-    //new Image(Constants.cellSize, Constants.cellSize);
-    //img.src = `${imgName}.png`;
     ctx.drawImage(img, cell.X1, cell.Y1);
 }
 
@@ -70,7 +74,7 @@ function placeMines(level) {
     let minesIndexes = [];
 
     for (let i = 0; i < level.minesCount; i++) {
-        let index = getRandomInteger(0, cells.length);
+        let index = getRandomInteger(0, level.width * level.height);
         let currentCell = getCellByID(level, index);
         let surroundings = getSurroundingCells(level, currentCell)
 
@@ -100,9 +104,10 @@ function getCellByID (level, ID) {
     return matrix[row][col];
 }
 
-function endGame(ctx, mines) {
+function endGame(level, ctx, mines) {
     mines.forEach(index => {
-        displayCellImage(ctx, cells[index], 'mine');
+        let currentCell = getCellByID(level, index);
+        displayCellImage(ctx, currentCell, 'mine');
     });
 }
 
