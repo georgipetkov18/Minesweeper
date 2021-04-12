@@ -1,5 +1,5 @@
 import * as Engine from './gameFunctions.js';
-import { cellSize, levels } from './constants.js';
+import { cellSize, levels, appUrl } from './constants.js';
 import Timer from './classes/timer.js';
 
 
@@ -144,9 +144,17 @@ function startGame(gameLevel) {
     }
 }
 
-window.onpopstate = () => { 
+window.onpopstate = () => {
     let url = window.location.href;
     history.replaceState({}, "", url);
-    location.reload();
-    console.log("hi")
+    var gameSpace = document.getElementById('game');
+
+    if (url === appUrl) {
+        levelDiv.style.display = 'initial';
+        gameSpace.style.display = 'none';
+    }
+    else {
+        levelDiv.style.display = 'none';
+        gameSpace.style.display = 'initial';
+    }
 }

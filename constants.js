@@ -2,6 +2,7 @@ import Beginner from "./classes/beginner.js";
 import Intermediate from "./classes/intermediate.js"
 import Advanced from "./classes/advanced.js"
 
+const appUrl = 'http://127.0.0.1:5500/';
 const cellSize = 50;
 
 const beginner = new Beginner(9, 10);
@@ -12,4 +13,4 @@ const levels = {
     "intermediate": intermediate,
     "advanced": advanced
 }
-export {cellSize, levels}
+export {cellSize, levels, appUrl}
